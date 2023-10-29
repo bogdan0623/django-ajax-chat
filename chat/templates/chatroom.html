@@ -1,0 +1,453 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% load markdown %}
+<!--{% load chat_tags %}-->
+
+{% block content %}
+<style>
+    .special-height {
+        max-height: calc(100vh - 58px);
+        min-height: calc(90vh - 58px);
+
+    }
+
+    .chat-area {
+        display: flex;
+        background: #fff;
+        flex-direction: column-reverse;
+        height: 100%;
+        min-height: 80vh;
+        max-height: 89vh;
+        overflow: auto;
+    }
+
+    .message-input-area {
+        display: flex;
+        padding: 10px 20px 5px;
+        background: #ffffff;
+        flex-direction: row-reverse;
+        
+        
+        width: 100%;
+        padding-top: 10px;
+
+    }
+    .message-input-area > span{
+        height: 100%;
+        display: flex;
+        align-items:center;
+        justify-content: center;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+        background: #555;
+
+    }
+    blockquote {
+        border-left: 3px solid rgb(192, 192, 192, .8);
+        font-size: 14px;
+        margin: 5px 0;
+        padding: 5px 10px;
+        background: rgba(248, 248, 248, 0.2);
+    }
+
+    .message-input-area #message-input,
+    .message-input-area button {
+        margin: 0;
+        width: 100%;
+        border-radius: 25px 0px 0px 25px;
+        border: none;
+        padding: 5px 20px;
+        background: #fff;
+        color: #000;
+        outline: none;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+
+    }
+
+    .message-input-area button {
+        width: unset;
+        border-radius: 0 25px 25px 0;
+        background: #fff;
+        color: #0275d8;
+        padding-top: 0;
+        padding-bottom: 0;
+    }
+
+    .chat-panel {
+        height: 100%;
+        overflow-y: scroll;
+
+    }
+
+    .user-message-container {
+        display: flex;
+        flex-direction: row;
+        gap: 10px;
+        padding: 5px;
+    }
+
+    .user-message {
+        display: flex;
+        flex-direction: column;
+        justify-content: right;
+        width: 100%;
+    }
+
+    .sent {
+        padding-left: 10%;
+        justify-content: right;
+        flex-direction: row-reverse;
+        
+    }
+
+    .received {
+        padding-right: 10%;
+    }
+
+    .received .user-message {
+        text-align: left;
+    }
+
+    .sent span {
+        background: #029fff;
+    }
+
+    .received span {
+        background: rgba(0, 0, 0, 0.15);
+        color: black;
+    }
+    .sent .user-message{
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        align-items: flex-end;
+    }
+    .user-message-content span {
+        display: inline-block;
+        box-shadow: 0 0 3px rgba(0, 0, 0, 0.09);
+        padding: 5px 10px;
+        width: auto;
+        border-radius: 7px 10px;
+    }
+    .user-message-content *{
+        overflow-wrap: break-word;
+    }
+    .search-contact {
+        background-color: #0275d8;
+        padding: 9px;
+    }
+
+    @media only screen and (max-width: 650px) {
+        .small-screen {
+            display: none;
+        }
+    }
+
+    @media only screen and (min-width: 650px) {
+        .big-screen {
+            display: none;
+        }
+    }
+    .markdown {
+        display: inline-block;
+        padding: 0;
+        margin: 0;
+        line-height: unset;
+    }
+    .markdown * {
+        margin: 0;
+    }
+    .markdown a{
+        color:rgb(215, 165, 31);
+    }
+    .main {
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+    }
+</style>
+
+<h1 class="text-center pb-3"><svg xmlns="http://www.w3.org/2000/svg" width="37" height="37" fill="currentColor" class="bi bi-messenger" viewBox="0 0 16 16">
+  <path d="M0 7.76C0 3.301 3.493 0 8 0s8 3.301 8 7.76-3.493 7.76-8 7.76c-.81 0-1.586-.107-2.316-.307a.639.639 0 0 0-.427.03l-1.588.702a.64.64 0 0 1-.898-.566l-.044-1.423a.639.639 0 0 0-.215-.456C.956 12.108 0 10.092 0 7.76zm5.546-1.459-2.35 3.728c-.225.358.214.761.551.506l2.525-1.916a.48.48 0 0 1 .578-.002l1.869 1.402a1.2 1.2 0 0 0 1.735-.32l2.35-3.728c.226-.358-.214-.761-.551-.506L9.728 7.381a.48.48 0 0 1-.578.002L7.281 5.98a1.2 1.2 0 0 0-1.735.32z"/>
+</svg> Chat Application</h1>
+
+<div class="container-fluid forum-lg-100-overflow-hidden">
+
+    <div class="row forum-md-100-fixed">
+
+        <!-- contact area -->
+        <div class="col-lg-4 col-md-4 white-bg forum-md-100-fixed">
+            <div class="big-screen">
+                <button class="btn btn-dark shadow-none btn-block" type="button" data-toggle="collapse"
+                    data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+                    <i class="fas fa-users mr-3"></i> Contacts
+                </button>
+                </p>
+                <div class="collapse" id="collapseExample">
+                    <div class="search-contact mb-2">
+                        <input type="text" class="user-search" placeholder="search">
+                    </div>
+                    {% for user in users %}
+                    <div class="contacts" data-username="{{ user.username }}">
+
+                        <div class="pb-1 d-flex flex-row  align-items-center">
+                            <div class="card-body py-1">
+                                <a href="{% url 'chatroom' user.pk %}" class="d-flex d-row-flex justify-content-between">
+                                        <p class="font-large font-weight-bold color-primary f p-0 m-0">
+                                            {{ user.username }}
+                                        </p>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    
+                    <p>There are no Users</p>
+               
+                    {% endfor %}
+                    <p class="d-none chat-empty-tag">No item matches your query</p>
+                </div>
+            </div>
+
+            <div class=" shadow-sm small-screen forum-md-100-fixed" style="max-height: calc(99vh - 66px); overflow-y: auto;">
+                <div class="search-contact mb-2">
+                    <h3 class="text-white">All Users</h3>
+                </div>
+                {% for user in users %}
+                <div class="contacts" data-username="{{ user.username }}">
+
+                    <div class="pb-1 d-flex flex-row align-items-center ">
+                        <div class="card-body py-1">
+                            <a href="{% url 'chatroom' user.pk %}" class="d-flex d-row-flex justify-content-between">
+                                <div class="info">
+                                    <p class="font-large font-weight-bold color-primary f p-0 m-0">
+                                        {{ user.username }}
+                                    </p>
+                                    
+                                </div>
+                                
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+               
+                <p>There are no users </p>
+                
+                {% endfor %}
+                <p class="d-none chat-empty-tag">No item matches your query</p>
+
+            </div>
+        </div>
+
+
+<!-- chat area -->
+        <div class="col-lg-8 col-md-8">
+            <div class=" chat-area" style="height=800">
+                <div class="message-input-area p-0 p-sm-2">
+                    <button id="message-send-btn" style="font-size: 40px;"><i class="fas fa-caret-right"></i></button>
+
+                    <textarea class="py-2" rows="2" placeholder="type your message" id="message-input" style="height: unset;"></textarea>
+                </div>
+
+                <div id="chat-panel" class="chat-panel">
+
+                    {% for user_message in user_messages %}
+                    <div
+                        class="user-message-container {% if request.user == user_message.sender %} sent {% else %} received{% endif %}">
+                        <div class="user-message text-wrap">
+                            <div class="user-message-content text-wrap text-break">
+                                <span class="inline-block text-wrap">
+                                    <div class="d-flex flex-row justify-content-between">
+                                        <div id="user-message-{{ user_message.pk }}">
+                                            {{ user_message.message }}
+                                        </div>
+                                    </div>
+                                </span>
+                            </div>
+                            <div class="user-message-date font-xsmall">
+                                {{ user_message.date_created | naturaltime}}
+                            </div>
+                        </div>
+
+                    </div>
+
+                    {% endfor %}
+                </div>
+
+                <div class="bg-primary d-flex align-items-center px-3 px-md-5 py-1">
+                    <p class="text-weight-bold font-xlarge pl-3 m-0 text-white"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-person-check" viewBox="0 0 16 16">
+  <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Zm1.679-4.493-1.335 2.226a.75.75 0 0 1-1.174.144l-.774-.773a.5.5 0 0 1 .708-.708l.547.548 1.17-1.951a.5.5 0 1 1 .858.514ZM11 5a3 3 0 1 1-6 0 3 3 0 0 1 6 0ZM8 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"/>
+  <path d="M8.256 14a4.474 4.474 0 0 1-.229-1.004H3c.001-.246.154-.986.832-1.664C4.484 10.68 5.711 10 8 10c.26 0 .507.009.74.025.226-.341.496-.65.804-.918C9.077 9.038 8.564 9 8 9c-5 0-6 3-6 4s1 1 1 1h5.256Z"/>
+</svg>  {{ other_user.username }} <br>
+                    </p>
+                <a class="btn btn-light ml-auto" href="{% url 'logout' %}">Log Out</a>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+<script defer async>
+    let message_send_btn = document.getElementById("message-send-btn");
+    let message_input = document.getElementById("message-input");
+    let interval = 0;
+    let load_counter = 0;
+    let current_interval = 2000;
+
+    function send_message() {
+        message = message_input.value;
+        if (message === "") {
+            return;
+        }
+        message.replaceAll('\n', '\n\n');
+        message_input.value = "";
+        fetch("{% url 'chatroom-ajax' other_user.pk %}", {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': "{{ csrf_token }}",
+            },
+            body: JSON.stringify({ "message": message })
+        }).then(e => e.json()).then(messages => {
+            for (message of messages) {
+                construct_message(message);
+            }
+        }).catch(e => {console.log(e); alert("There was an error sending your message.")});
+    }
+
+    function load_messages() {
+        fetch("{% url 'chatroom-ajax' other_user.pk %}").then(e => e.json()).then(messages => {
+            // these if else statements are there to avoid flooding the server with lots of requests per second.
+            if (messages.length > 0) {
+                if (current_interval > 2000) {
+                    current_interval = 2000;
+                    load_counter = 0;
+                    clearInterval(interval);
+                    interval = setInterval(load_messages, current_interval);
+                }
+
+            } else {
+                load_counter++;
+                if (load_counter > 2) {
+                    if (current_interval < 5000) {
+                        current_interval = current_interval + 1000;
+                    }
+                    clearInterval(interval)
+                    interval = setInterval(load_messages, current_interval);
+                }
+            }
+            for (message of messages) {
+                construct_message(message);
+            }
+
+        }).catch(e => console.log(e));
+    }
+
+    function delete_messages_constructor(){
+        for (delete_btn of document.getElementsByClassName("delete-message-btn") ){
+            delete_btn.removeEventListener("click", delete_message);
+            delete_btn.addEventListener("click", delete_message)
+        }
+
+    }
+    delete_messages_constructor()
+    function construct_message(message) {
+        let user_message_container = document.createElement("div")
+        if (message["sent"]) {
+            user_message_container.classList.add("user-message-container", "sent");
+
+        } else {
+            user_message_container.classList.add("user-message-container", "received");
+        }
+
+        let user_message = document.createElement("div");
+        user_message.classList.add("user-message");
+
+        let user_message_content = document.createElement("div");
+        user_message_content.classList.add("user-message-content");
+        let span = document.createElement("span");
+        span.classList.add("inline-block", "text-wrap")
+        user_message_content.appendChild(span);
+        let delete_btn = '';
+        if (message["sent"]){
+            delete_btn = `
+            <a class="dropdown-item p-1"  data-url="${message['get_delete_url']}" data-target="user-message-${message['pk']}">
+                Delete
+            </a>`;
+        }
+        span.innerHTML += `
+        <div class="d-flex flex-row justify-content-between">
+            <div id="user-message-${message['pk']}">
+                ${message["message"]}
+            </div>
+            
+        </div>
+        `
+
+        let user_message_date = document.createElement("div");
+        user_message_date.classList.add("user-message-date", "font-xsmall");
+        user_message_date.innerText = message["date_created"];
+        user_message.appendChild(user_message_content)
+        user_message_content.appendChild(user_message_date)
+
+        user_message_container.appendChild(user_message);
+
+        let chat_panel = document.getElementById("chat-panel");
+        chat_panel.appendChild(user_message_container);
+        user_message_container.scrollIntoView();
+        delete_messages_constructor()
+
+    }
+    function scrolllastmessageintoView() {
+        let messages = document.getElementsByClassName("user-message-container");
+        if (messages.length > 0) {
+            messages[messages.length - 1].scrollIntoView();
+        }
+    }
+
+    message_send_btn.addEventListener("click", send_message)
+    scrolllastmessageintoView()
+    interval = setInterval(load_messages, current_interval);
+</script>
+
+
+<script>
+    window.onload = function () {
+        let contacts = document.getElementsByClassName("contacts");
+        let search_inputs = document.getElementsByClassName("user-search");
+        search_inputs.forEach(search_input => {
+            search_input.addEventListener("input", function () {
+                let val = search_input.value;
+                let empty = true;
+                contacts.forEach(element => {
+                    if (element.dataset.username.toLowerCase().search(val.toLowerCase()) >= 0) {
+                        empty = false;
+                        element.classList.remove("d-none");
+                    } else {
+                        element.classList.add("d-none");
+                    }
+
+                });
+                if (empty) {
+                    document.getElementsByClassName("chat-empty-tag").forEach(element => { element.classList.remove("d-none"); });
+                } else {
+                    document.getElementsByClassName("chat-empty-tag").forEach(element => { element.classList.add("d-none"); });
+                }
+                empty = false;
+            });
+        });
+    }
+</script>
+{% endblock %}

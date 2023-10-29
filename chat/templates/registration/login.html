@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<!--<div class="container py-5" style="max-width: 540px;">-->
+<h1 class="text-center pb-3"><svg xmlns="http://www.w3.org/2000/svg" width="37" height="37" fill="currentColor" class="bi bi-messenger" viewBox="0 0 16 16">
+  <path d="M0 7.76C0 3.301 3.493 0 8 0s8 3.301 8 7.76-3.493 7.76-8 7.76c-.81 0-1.586-.107-2.316-.307a.639.639 0 0 0-.427.03l-1.588.702a.64.64 0 0 1-.898-.566l-.044-1.423a.639.639 0 0 0-.215-.456C.956 12.108 0 10.092 0 7.76zm5.546-1.459-2.35 3.728c-.225.358.214.761.551.506l2.525-1.916a.48.48 0 0 1 .578-.002l1.869 1.402a1.2 1.2 0 0 0 1.735-.32l2.35-3.728c.226-.358-.214-.761-.551-.506L9.728 7.381a.48.48 0 0 1-.578.002L7.281 5.98a1.2 1.2 0 0 0-1.735.32z"/>
+</svg> Chat Application</h1>
+<section class="vh-100">
+  <div class="container-fluid h-custom">
+    <div class="row d-flex justify-content-center align-items-center h-100">
+      <div class="col-md-9 col-lg-6 col-xl-5">
+        <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/draw2.webp"
+          class="img-fluid" alt="Sample image">
+      </div>
+
+        <div class="col-md-8 col-lg-6 col-xl-4 offset-xl-1">
+
+            <form action="." method="POST">
+                <h3>Enter Details to Log In</h3>
+                {% csrf_token %}
+                {{ form | crispy }}
+                <div class="form-group">
+                    <input type="submit" class="btn btn-primary btn-lg"
+                           style="padding-left: 2.5rem; padding-right: 2.5rem;" value="Login">
+                </div>
+                <p class="py-2">Or <a href="{% url 'register' %}">Register</a> if you do not have an account.</p>
+
+            </form>
+        </div>
+    </div>
+  </div>
+</section>
+<!--</div>-->
+{% endblock %}
+
+<section class="vh-100">
+  <div class="container-fluid h-custom">
+    <div class="row d-flex justify-content-center align-items-center h-100">
+      <div class="col-md-9 col-lg-6 col-xl-5">
+        <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/draw2.webp"
+          class="img-fluid" alt="Sample image">
+      </div>
+      <div class="col-md-8 col-lg-6 col-xl-4 offset-xl-1">
+<!--        <form>-->
+<!--          <div class="d-flex flex-row align-items-center justify-content-center justify-content-lg-start">-->
+<!--            <p class="lead fw-normal mb-0 me-3">Sign in with</p>-->
+<!--            <button type="button" class="btn btn-primary btn-floating mx-1">-->
+<!--              <i class="fab fa-facebook-f"></i>-->
+<!--            </button>-->
+
+<!--            <button type="button" class="btn btn-primary btn-floating mx-1">-->
+<!--              <i class="fab fa-twitter"></i>-->
+<!--            </button>-->
+
+<!--            <button type="button" class="btn btn-primary btn-floating mx-1">-->
+<!--              <i class="fab fa-linkedin-in"></i>-->
+<!--            </button>-->
+<!--          </div>-->
+
+<!--          <div class="divider d-flex align-items-center my-4">-->
+<!--            <p class="text-center fw-bold mx-3 mb-0">Or</p>-->
+<!--          </div>-->
+
+<!--          &lt;!&ndash; Email input &ndash;&gt;-->
+<!--          <div class="form-outline mb-4">-->
+<!--            <input type="email" id="form3Example3" class="form-control form-control-lg"-->
+<!--              placeholder="Enter a valid email address" />-->
+<!--            <label class="form-label" for="form3Example3">Email address</label>-->
+<!--          </div>-->
+
+<!--          &lt;!&ndash; Password input &ndash;&gt;-->
+<!--          <div class="form-outline mb-3">-->
+<!--            <input type="password" id="form3Example4" class="form-control form-control-lg"-->
+<!--              placeholder="Enter password" />-->
+<!--            <label class="form-label" for="form3Example4">Password</label>-->
+<!--          </div>-->
+
+<!--          <div class="text-center text-lg-start mt-4 pt-2">-->
+<!--            <button type="button" class="btn btn-primary btn-lg"-->
+<!--              style="padding-left: 2.5rem; padding-right: 2.5rem;">Login</button>-->
+<!--            <p class="small fw-bold mt-2 pt-1 mb-0">Don't have an account? <a href="#!"-->
+<!--                class="link-danger">Register</a></p>-->
+<!--          </div>-->
+
+<!--        </form>-->
+      </div>
+    </div>
+  </div>
+</section>
